@@ -1,6 +1,6 @@
-pip install paddlepaddle-gpu==1.8.4.post107
-pip install tensorflow-gpu==1.12.2
-pip install keras==2.2.5
-pip install pydot
-pip install cython
-pip install pycocotools
+paddlepaddle-gpu==1.8.4.post107
+tensorflow-gpu==1.12.2
+keras==2.2.5
+pydot
+cython
+pycocotools
