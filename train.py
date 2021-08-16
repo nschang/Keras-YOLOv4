@@ -14,6 +14,8 @@ import datetime
 from collections import OrderedDict
 import os
 import argparse
+import tensorflow as tf
+from tensorflow import keras
 
 from config import *
 from model.EMA import ExponentialMovingAverage
@@ -43,7 +45,7 @@ use_gpu = args.use_gpu
 
 # 显存分配
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
-from keras.backend.tensorflow_backend import set_session
+from keras.backend.tensorflow_backend import set_session # Alternatively, try: from tensorflow.python.keras.backend import set_session
 config = tf.ConfigProto()
 config.gpu_options.per_process_gpu_memory_fraction = 1.0
 set_session(tf.Session(config=config))
@@ -179,27 +181,27 @@ if __name__ == '__main__':
     yolo = YOLO(backbone, head)
 
     # predict_model
-    x = keras.layers.Input(shape=(None, None, 3), name='x', dtype='float32')
-    im_size = keras.layers.Input(shape=(2,), name='im_size', dtype='int32')
+    x = tf.keras.layers.Input(shape=(None, None, 3), name='x', dtype='float32')
+    im_size = tf.keras.layers.Input(shape=(2,), name='im_size', dtype='int32')
     outputs = yolo.get_outputs(x)
     preds = yolo.get_prediction(outputs, im_size)
-    predict_model = keras.models.Model(inputs=[x, im_size], outputs=preds)
+    predict_model = tf.keras.models.Model(inputs=[x, im_size], outputs=preds)
 
     # train_model
     anchor_masks = cfg.gt2YoloTarget['anchor_masks']
     anchor_num_per_layer = len(anchor_masks[0])
     num_filters = (num_classes + 6)
-    gt_bbox_tensor = keras.layers.Input(shape=(None, 4), name='gt_bbox', dtype='float32')
-    target0_tensor = keras.layers.Input(shape=(anchor_num_per_layer, num_filters, None, None), name='target0', dtype='float32')
-    target1_tensor = keras.layers.Input(shape=(anchor_num_per_layer, num_filters, None, None), name='target1', dtype='float32')
+    gt_bbox_tensor = tf.keras.layers.Input(shape=(None, 4), name='gt_bbox', dtype='float32')
+    target0_tensor = tf.keras.layers.Input(shape=(anchor_num_per_layer, num_filters, None, None), name='target0', dtype='float32')
+    target1_tensor = tf.keras.layers.Input(shape=(anchor_num_per_layer, num_filters, None, None), name='target1', dtype='float32')
     if target_num > 2:
-        target2_tensor = keras.layers.Input(shape=(anchor_num_per_layer, num_filters, None, None), name='target2', dtype='float32')
+        target2_tensor = tf.keras.layers.Input(shape=(anchor_num_per_layer, num_filters, None, None), name='target2', dtype='float32')
         targets = [target0_tensor, target1_tensor, target2_tensor]
     else:
         targets = [target0_tensor, target1_tensor]
-    loss_list = keras.layers.Lambda(yolo.get_loss, name='yolo_loss',
+    loss_list = tf.keras.layers.Lambda(yolo.get_loss, name='yolo_loss',
                                     arguments={'target_num': target_num, })([*outputs, gt_bbox_tensor, *targets])
-    train_model = keras.models.Model(inputs=[x, gt_bbox_tensor, *targets], outputs=loss_list)
+    train_model = tf.keras.models.Model(inputs=[x, gt_bbox_tensor, *targets], outputs=loss_list)
     loss_n = len(loss_list)
 
     _decode = Decode(predict_model, class_names, use_gpu, cfg, for_test=False)
@@ -287,7 +289,7 @@ if __name__ == '__main__':
     # 保存模型的目录
     if not os.path.exists('./weights'): os.mkdir('./weights')
 
-    train_model.compile(loss={'yolo_loss': lambda y_true, y_pred: y_pred}, optimizer=keras.optimizers.Adam(lr=cfg.train_cfg['lr']))
+    train_model.compile(loss={'yolo_loss': lambda y_true, y_pred: y_pred}, optimizer=tf.keras.optimizers.Adam(lr=cfg.train_cfg['lr']))
     train_model.summary(line_length=130)
 
     time_stat = deque(maxlen=20)

@@ -9,7 +9,7 @@
 # ================================================================
 import tensorflow as tf
 from tensorflow import keras
-from tensorflow.keras import backend as K
+from tensorflow.python.keras import backend as K
 from tensorflow.keras.layers import Layer
 import numpy as np
 
@@ -123,7 +123,8 @@ class Conv2dUnit(object):
         if act == 'relu':
             self.act = tf.keras.layers.ReLU()
         elif act == 'leaky':
-            self.act = tf.keras.layers.advanced_activations.LeakyReLU(alpha=0.1)
+            self.act = tf.keras.layers.LeakyReLU(alpha=0.1)
+            #self.act = tf.keras.layers.advanced_activations.LeakyReLU(alpha=0.1)
         elif act == 'mish':
             self.act = Mish()
 

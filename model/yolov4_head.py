@@ -7,6 +7,9 @@
 #   Description : keras_ppyolo
 #
 # ================================================================
+import tensorflow as tf
+from tensorflow import keras
+
 from model.fast_nms import fast_nms
 from model.head import *
 from model.matrix_nms import matrix_nms
@@ -93,7 +96,7 @@ class YOLOv4Head(object):
 
         # pan01
         self.conv079 = Conv2dUnit(512, 256, 1, stride=1, bn=bn, gn=gn, af=af, act='leaky', name='head.conv079')
-        self.upsample1 = keras.layers.UpSampling2D(2, interpolation='nearest')
+        self.upsample1 = tf.keras.layers.UpSampling2D(2, interpolation='nearest')
         self.conv080 = Conv2dUnit(512, 256, 1, stride=1, bn=bn, gn=gn, af=af, act='leaky', name='head.conv080')
         self.conv081 = Conv2dUnit(512, 256, 1, stride=1, bn=bn, gn=gn, af=af, act='leaky', name='head.conv081')
         self.conv082 = Conv2dUnit(256, 512, 3, stride=1, bn=bn, gn=gn, af=af, act='leaky', name='head.conv082')
@@ -104,7 +107,7 @@ class YOLOv4Head(object):
 
         # pan02
         self.conv086 = Conv2dUnit(256, 128, 1, stride=1, bn=bn, gn=gn, af=af, act='leaky', name='head.conv086')
-        self.upsample2 = keras.layers.UpSampling2D(2, interpolation='nearest')
+        self.upsample2 = tf.keras.layers.UpSampling2D(2, interpolation='nearest')
         self.conv087 = Conv2dUnit(256, 128, 1, stride=1, bn=bn, gn=gn, af=af, act='leaky', name='head.conv087')
         self.conv088 = Conv2dUnit(256, 128, 1, stride=1, bn=bn, gn=gn, af=af, act='leaky', name='head.conv088')
         self.conv089 = Conv2dUnit(128, 256, 3, stride=1, bn=bn, gn=gn, af=af, act='leaky', name='head.conv089')
@@ -166,7 +169,7 @@ class YOLOv4Head(object):
         x = self.conv079(fpn_s32)
         x = self.upsample1(x)
         s16 = self.conv080(s16)
-        x = keras.layers.Concatenate(axis=-1)([s16, x])
+        x = tf.keras.layers.Concatenate(axis=-1)([s16, x])
         x = self.conv081(x)
         x = self.conv082(x)
         x = self.conv083(x)
@@ -178,7 +181,7 @@ class YOLOv4Head(object):
         x = self.conv086(fpn_s16)
         x = self.upsample2(x)
         s8 = self.conv087(s8)
-        x = keras.layers.Concatenate(axis=-1)([s8, x])
+        x = tf.keras.layers.Concatenate(axis=-1)([s8, x])
         x = self.conv088(x)
         x = self.conv089(x)
         x = self.conv090(x)
@@ -192,7 +195,7 @@ class YOLOv4Head(object):
 
         # output_m, 需要concat()
         x = self.conv095(x)
-        x = keras.layers.Concatenate(axis=-1)([x, fpn_s16])
+        x = tf.keras.layers.Concatenate(axis=-1)([x, fpn_s16])
         x = self.conv096(x)
         x = self.conv097(x)
         x = self.conv098(x)
@@ -203,7 +206,7 @@ class YOLOv4Head(object):
 
         # output_l, 需要concat()
         x = self.conv103(x)
-        x = keras.layers.Concatenate(axis=-1)([x, fpn_s32])
+        x = tf.keras.layers.Concatenate(axis=-1)([x, fpn_s32])
         x = self.conv104(x)
         x = self.conv105(x)
         x = self.conv106(x)
@@ -296,7 +299,7 @@ class YOLOv4Head(object):
                 return pred
             preds = tf.map_fn(_process_sample, [yolo_boxes, yolo_scores], dtype=tf.float32)
             return preds
-        preds = keras.layers.Lambda(output_layer)(outputs)
+        preds = tf.keras.layers.Lambda(output_layer)(outputs)
         return preds
 
 

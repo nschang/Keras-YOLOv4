@@ -7,7 +7,8 @@
 #   Description : keras_ppyolo
 #
 # ================================================================
-import keras
+import tensorflow as tf
+from tensorflow import keras
 from model.custom_layers import Conv2dUnit
 
 
@@ -27,11 +28,11 @@ class ConvBlock(object):
         self.conv3 = Conv2dUnit(filters2, filters3, 1, stride=1, bn=bn, gn=gn, af=af, act=None, name=block_name+'_branch2c')
 
         if not self.is_first:
-            self.avg_pool = keras.layers.AvgPool2D(pool_size=2, strides=2, padding='valid')
+            self.avg_pool = tf.keras.layers.AvgPool2D(pool_size=2, strides=2, padding='valid')
             self.conv4 = Conv2dUnit(in_c, filters3, 1, stride=1, bn=bn, gn=gn, af=af, act=None, name=block_name+'_branch1')
         else:
             self.conv4 = Conv2dUnit(in_c, filters3, 1, stride=stride, bn=bn, gn=gn, af=af, act=None, name=block_name+'_branch1')
-        self.act = keras.layers.ReLU()
+        self.act = tf.keras.layers.ReLU()
 
     def freeze(self):
         self.conv1.freeze()
@@ -46,7 +47,7 @@ class ConvBlock(object):
         if not self.is_first:
             input_tensor = self.avg_pool(input_tensor)
         shortcut = self.conv4(input_tensor)
-        x = keras.layers.add([x, shortcut])
+        x = tf.keras.layers.add([x, shortcut])
         x = self.act(x)
         return x
 
@@ -60,7 +61,7 @@ class IdentityBlock(object):
         self.conv2 = Conv2dUnit(filters1, filters2, 3, stride=1, bn=bn, gn=gn, af=af, act='relu', use_dcn=use_dcn, name=block_name+'_branch2b')
         self.conv3 = Conv2dUnit(filters2, filters3, 1, stride=1, bn=bn, gn=gn, af=af, act=None, name=block_name+'_branch2c')
 
-        self.act = keras.layers.ReLU()
+        self.act = tf.keras.layers.ReLU()
 
     def freeze(self):
         self.conv1.freeze()
@@ -71,7 +72,7 @@ class IdentityBlock(object):
         x = self.conv1(input_tensor)
         x = self.conv2(x)
         x = self.conv3(x)
-        x = keras.layers.add([x, input_tensor])
+        x = tf.keras.layers.add([x, input_tensor])
         x = self.act(x)
         return x
 
@@ -98,8 +99,8 @@ class Resnet50Vd(object):
         self.stage1_conv1_2 = Conv2dUnit(32, 32, 3, stride=1, bn=bn, gn=gn, af=af, act='relu', name='conv1_2')
         self.stage1_conv1_3 = Conv2dUnit(32, 64, 3, stride=1, bn=bn, gn=gn, af=af, act='relu', name='conv1_3')
         # pool_size=3, strides=2, padding=1时，要加一个ZeroPadding2D()层
-        self.zero_padding = keras.layers.ZeroPadding2D(padding=((1, 0), (1, 0)))
-        self.pool = keras.layers.MaxPool2D(pool_size=3, strides=2, padding='valid')
+        self.zero_padding = tf.keras.layers.ZeroPadding2D(padding=((1, 0), (1, 0)))
+        self.pool = tf.keras.layers.MaxPool2D(pool_size=3, strides=2, padding='valid')
 
         # stage2
         self.stage2_0 = ConvBlock(64, [64, 64, 256], bn, gn, af, stride=1, downsample_in3x3=downsample_in3x3, is_first=True, block_name='res2a')
@@ -213,11 +214,11 @@ class BasicBlock(object):
         self.conv3 = None
         if self.stride == 2 or self.is_first:
             if not self.is_first:
-                self.avg_pool = keras.layers.AvgPool2D(pool_size=2, strides=2, padding='valid')
+                self.avg_pool = tf.keras.layers.AvgPool2D(pool_size=2, strides=2, padding='valid')
                 self.conv3 = Conv2dUnit(in_c, filters2, 1, stride=1, bn=bn, gn=gn, af=af, act=None, name=block_name+'_branch1')
             else:
                 self.conv3 = Conv2dUnit(in_c, filters2, 1, stride=stride, bn=bn, gn=gn, af=af, act=None, name=block_name+'_branch1')
-        self.act = keras.layers.ReLU()
+        self.act = tf.keras.layers.ReLU()
 
     def freeze(self):
         self.conv1.freeze()
@@ -234,7 +235,7 @@ class BasicBlock(object):
             shortcut = self.conv3(input_tensor)
         else:
             shortcut = input_tensor
-        x = keras.layers.add([x, shortcut])
+        x = tf.keras.layers.add([x, shortcut])
         x = self.act(x)
         return x
 
@@ -259,8 +260,8 @@ class Resnet18Vd(object):
         self.stage1_conv1_2 = Conv2dUnit(32, 32, 3, stride=1, bn=bn, gn=gn, af=af, act='relu', name='conv1_2')
         self.stage1_conv1_3 = Conv2dUnit(32, 64, 3, stride=1, bn=bn, gn=gn, af=af, act='relu', name='conv1_3')
         # pool_size=3, strides=2, padding=1时，要加一个ZeroPadding2D()层
-        self.zero_padding = keras.layers.ZeroPadding2D(padding=((1, 0), (1, 0)))
-        self.pool = keras.layers.MaxPool2D(pool_size=3, strides=2, padding='valid')
+        self.zero_padding = tf.keras.layers.ZeroPadding2D(padding=((1, 0), (1, 0)))
+        self.pool = tf.keras.layers.MaxPool2D(pool_size=3, strides=2, padding='valid')
 
         # stage2
         self.stage2_0 = BasicBlock(64, [64, 64], bn, gn, af, stride=1, is_first=True, block_name='res2a')

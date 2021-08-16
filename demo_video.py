@@ -14,6 +14,8 @@ import os
 import time
 import threading
 import argparse
+import tensorflow as tf
+from tensorflow import keras
 
 from config import *
 from model.decode_np import Decode
@@ -68,11 +70,11 @@ if __name__ == '__main__':
     head = Head(yolo_loss=None, nms_cfg=cfg.nms_cfg, **cfg.head)
     yolo = YOLO(backbone, head)
 
-    x = keras.layers.Input(shape=(None, None, 3), name='x', dtype='float32')
-    im_size = keras.layers.Input(shape=(2,), name='im_size', dtype='int32')
+    x = tf.keras.layers.Input(shape=(None, None, 3), name='x', dtype='float32')
+    im_size = tf.keras.layers.Input(shape=(2,), name='im_size', dtype='int32')
     outputs = yolo.get_outputs(x)
     preds = yolo.get_prediction(outputs, im_size)
-    predict_model = keras.models.Model(inputs=[x, im_size], outputs=preds)
+    predict_model = tf.keras.models.Model(inputs=[x, im_size], outputs=preds)
     predict_model.load_weights(model_path, by_name=True, skip_mismatch=True)
     predict_model.summary(line_length=130)
 

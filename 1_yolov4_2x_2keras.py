@@ -7,6 +7,9 @@
 #   Description : keras_ppyolo
 #
 # ================================================================
+import tensorflow as tf
+from tensorflow import keras
+
 from config import *
 from model.custom_layers import DCNv2
 from model.yolo import *
@@ -43,11 +46,11 @@ cfg.head['iou_aware'] = False
 head = Head(yolo_loss=None, nms_cfg=cfg.nms_cfg, **cfg.head)
 yolo = YOLO(backbone, head)
 
-x = keras.layers.Input(shape=(None, None, 3))
-im_size = keras.layers.Input(shape=(2, ))
+x = tf.keras.layers.Input(shape=(None, None, 3))
+im_size = tf.keras.layers.Input(shape=(2, ))
 outputs = yolo.get_outputs(x)
 preds = yolo.get_prediction(outputs, im_size)
-predict_model = keras.models.Model(inputs=[x, im_size], outputs=preds)
+predict_model = tf.keras.models.Model(inputs=[x, im_size], outputs=preds)
 predict_model.summary(line_length=130)
 print('\nCopying...')
 
