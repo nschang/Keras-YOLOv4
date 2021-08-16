@@ -1,0 +1,26 @@
+<annotation>
+	<folder>img-1</folder>
+	<filename>3_cropped.jpg</filename>
+	<path>/Volumes/F/train/img-1/3_cropped.jpg</path>
+	<source>
+		<database>Unknown</database>
+	</source>
+	<size>
+		<width>2300</width>
+		<height>1600</height>
+		<depth>3</depth>
+	</size>
+	<segmented>0</segmented>
+	<object>
+		<name>plastic</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>2046</xmin>
+			<ymin>1424</ymin>
+			<xmax>2095</xmax>
+			<ymax>1463</ymax>
+		</bndbox>
+	</object>
+</annotation>

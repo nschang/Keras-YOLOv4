@@ -7,7 +7,8 @@
 #   Description : keras_ppyolo
 #
 # ================================================================
-import keras
+import tensorflow as tf
+from tensorflow import keras
 from model.custom_layers import Conv2dUnit
 
 
@@ -21,7 +22,7 @@ class ResidualBlock(object):
         residual = input
         x = self.conv1(input)
         x = self.conv2(x)
-        x = keras.layers.add([residual, x])
+        x = tf.keras.layers.add([residual, x])
         return x
 
     def freeze(self):
@@ -115,7 +116,7 @@ class CSPDarknet53(object):
         x = self.stage1_conv3(x)
         x = self.stage1_blocks(x)
         x = self.stage1_conv4(x)
-        x = keras.layers.Concatenate(axis=-1)([x, s2])
+        x = tf.keras.layers.Concatenate(axis=-1)([x, s2])
         s2 = self.stage1_conv5(x)
         # stage2
         x = self.stage2_conv1(s2)
@@ -123,7 +124,7 @@ class CSPDarknet53(object):
         x = self.stage2_conv3(x)
         x = self.stage2_blocks(x)
         x = self.stage2_conv4(x)
-        x = keras.layers.Concatenate(axis=-1)([x, s4])
+        x = tf.keras.layers.Concatenate(axis=-1)([x, s4])
         s4 = self.stage2_conv5(x)
         # stage3
         x = self.stage3_conv1(s4)
@@ -131,7 +132,7 @@ class CSPDarknet53(object):
         x = self.stage3_conv3(x)
         x = self.stage3_blocks(x)
         x = self.stage3_conv4(x)
-        x = keras.layers.Concatenate(axis=-1)([x, s8])
+        x = tf.keras.layers.Concatenate(axis=-1)([x, s8])
         s8 = self.stage3_conv5(x)
         # stage4
         x = self.stage4_conv1(s8)
@@ -139,7 +140,7 @@ class CSPDarknet53(object):
         x = self.stage4_conv3(x)
         x = self.stage4_blocks(x)
         x = self.stage4_conv4(x)
-        x = keras.layers.Concatenate(axis=-1)([x, s16])
+        x = tf.keras.layers.Concatenate(axis=-1)([x, s16])
         s16 = self.stage4_conv5(x)
         # stage5
         x = self.stage5_conv1(s16)
@@ -147,7 +148,7 @@ class CSPDarknet53(object):
         x = self.stage5_conv3(x)
         x = self.stage5_blocks(x)
         x = self.stage5_conv4(x)
-        x = keras.layers.Concatenate(axis=-1)([x, s32])
+        x = tf.keras.layers.Concatenate(axis=-1)([x, s32])
         s32 = self.stage5_conv5(x)
 
         outs = []

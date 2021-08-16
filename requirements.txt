@@ -1,5 +1,5 @@
-paddlepaddle-gpu==1.8.4.post107
-tensorflow-gpu==1.12.2
+#paddlepaddle-gpu==1.8.4.post107 #install paddlepaddle-gpu==2.1.0.post101 for CUDA10.1 on Colab
+#tensorflow-gpu==1.12.2 #tensorflow installed by default on colab
 keras==2.2.5
 pydot
 cython

@@ -8,9 +8,9 @@
 #
 # ================================================================
 import tensorflow as tf
-import keras
-from keras import backend as K
-from keras.engine.topology import Layer
+from tensorflow import keras
+from tensorflow.keras import backend as K
+from tensorflow.keras.layers import Layer
 import numpy as np
 
 
@@ -30,9 +30,9 @@ class SPP(Layer):
         assert seq in ['desc', 'asc']
         self.out_c = out_c
         self.seq = seq
-        self.pool1 = keras.layers.MaxPool2D(pool_size=5, strides=1, padding='same')
-        self.pool2 = keras.layers.MaxPool2D(pool_size=9, strides=1, padding='same')
-        self.pool3 = keras.layers.MaxPool2D(pool_size=13, strides=1, padding='same')
+        self.pool1 = tf.keras.layers.MaxPool2D(pool_size=5, strides=1, padding='same')
+        self.pool2 = tf.keras.layers.MaxPool2D(pool_size=9, strides=1, padding='same')
+        self.pool3 = tf.keras.layers.MaxPool2D(pool_size=13, strides=1, padding='same')
 
     def compute_output_shape(self, input_shape):
         return (None, None, None, self.out_c)
@@ -93,7 +93,7 @@ class Conv2dUnit(object):
             elif stride == 2:
                 if not use_dcn:
                     padding = 'valid'
-                    self.zero_padding = keras.layers.ZeroPadding2D(padding=((pad, 0), (pad, 0)))
+                    self.zero_padding = tf.keras.layers.ZeroPadding2D(padding=((pad, 0), (pad, 0)))
         kernel_initializer = 'glorot_uniform'
         bias_initializer = 'zeros'
         if use_dcn:
@@ -101,7 +101,7 @@ class Conv2dUnit(object):
             pad2 = (filter_size - 1) // 2
             self.conv = DCNv2(input_dim, filters, filter_size=filter_size, stride=stride, padding=pad2, bias_attr=False, name=name+'.conv')
         else:
-            self.conv = keras.layers.Conv2D(filters, kernel_size=filter_size, strides=stride, padding=padding, use_bias=bias_attr,
+            self.conv = tf.keras.layers.Conv2D(filters, kernel_size=filter_size, strides=stride, padding=padding, use_bias=bias_attr,
                                             kernel_initializer=kernel_initializer, bias_initializer=bias_initializer, name=name+'.conv')
 
         # norm
@@ -110,20 +110,20 @@ class Conv2dUnit(object):
         self.af = None
         if bn:
             # PPYOLO使用的epsilon=1e-5，不设置的话会有点偏差。
-            self.bn = keras.layers.BatchNormalization(name=name+'.bn', epsilon=1e-5)
+            self.bn = tf.keras.layers.BatchNormalization(name=name+'.bn', epsilon=1e-5)
         if gn:
             pass
-            # self.gn = keras.layers.BatchNormalization()
+            # self.gn = tf.keras.layers.BatchNormalization()
         if af:
             pass
-            # self.af = keras.layers.BatchNormalization()
+            # self.af = tf.keras.layers.BatchNormalization()
 
         # act
         self.act = None
         if act == 'relu':
-            self.act = keras.layers.ReLU()
+            self.act = tf.keras.layers.ReLU()
         elif act == 'leaky':
-            self.act = keras.layers.advanced_activations.LeakyReLU(alpha=0.1)
+            self.act = tf.keras.layers.advanced_activations.LeakyReLU(alpha=0.1)
         elif act == 'mish':
             self.act = Mish()
 
@@ -172,8 +172,8 @@ class DCNv2(Layer):
         self.padding = padding
         self.bias_attr = bias_attr
 
-        self.conv_offset_padding = keras.layers.ZeroPadding2D(padding=((1, 0), (1, 0)))
-        self.zero_padding = keras.layers.ZeroPadding2D(padding=((padding, padding+1), (padding, padding+1)))
+        self.conv_offset_padding = tf.keras.layers.ZeroPadding2D(padding=((1, 0), (1, 0)))
+        self.zero_padding = tf.keras.layers.ZeroPadding2D(padding=((padding, padding+1), (padding, padding+1)))
 
     def build(self, input_shape):
         input_dim = self.input_dim

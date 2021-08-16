@@ -10,9 +10,9 @@
 import tensorflow as tf
 import numpy as np
 import copy
-import keras
-import keras.backend as K
-from keras.engine.topology import Layer
+from tensorflow import keras
+from tensorflow.keras import backend as K
+from tensorflow.keras.layers import Layer
 
 from model.custom_layers import Conv2dUnit, SPP
 from model.fast_nms import fast_nms
@@ -429,7 +429,7 @@ class YOLOv3Head(object):
                 # do not perform upsample in the last detection_block
                 conv_unit = Conv2dUnit(64 * (2**out_layer_num) // (2**i), 256 // (2**i), 1, stride=1, bn=bn, gn=gn, af=af, act='leaky', name="yolo_transition.{}".format(i))
                 # upsample
-                upsample = keras.layers.UpSampling2D(2, interpolation='nearest')
+                upsample = tf.keras.layers.UpSampling2D(2, interpolation='nearest')
                 self.upsample_layers.append(conv_unit)
                 self.upsample_layers.append(upsample)
 
@@ -449,7 +449,7 @@ class YOLOv3Head(object):
         route = None
         for i, block in enumerate(blocks):
             if i > 0:  # perform concat in first 2 detection_block
-                block = keras.layers.Concatenate(axis=-1)([route, block])
+                block = tf.keras.layers.Concatenate(axis=-1)([route, block])
             route, tip = self.detection_blocks[i](block)
             block_out = self.yolo_output_convs[i](tip)
             outputs.append(block_out)
@@ -539,7 +539,7 @@ class YOLOv3Head(object):
                 return pred
             preds = tf.map_fn(_process_sample, [yolo_boxes, yolo_scores], dtype=tf.float32)
             return preds
-        preds = keras.layers.Lambda(output_layer)(outputs)
+        preds = tf.keras.layers.Lambda(output_layer)(outputs)
         return preds
 
 

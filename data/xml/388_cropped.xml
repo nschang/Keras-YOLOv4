@@ -1,0 +1,26 @@
+<annotation>
+	<folder>jpg</folder>
+	<filename>388_cropped.jpg</filename>
+	<path>../img/388_cropped.jpg</path>
+	<source>
+		<database>Unknown</database>
+	</source>
+	<size>
+		<width>1022</width>
+		<height>653</height>
+		<depth>3</depth>
+	</size>
+	<segmented>0</segmented>
+	<object>
+		<name>plastic</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>561</xmin>
+			<ymin>354</ymin>
+			<xmax>622</xmax>
+			<ymax>402</ymax>
+		</bndbox>
+	</object>
+</annotation>

@@ -7,7 +7,8 @@
 #   Description :
 #
 # ================================================================
-import keras
+import tensorflow as tf
+from tensorflow import keras
 import numpy as np
 import time
 import threading
@@ -31,7 +32,7 @@ class ExponentialMovingAverage():
             if len(weights) == 0:
                 continue
             layer_name = ly.name
-            if isinstance(ly, keras.layers.BatchNormalization):   # bn层的均值、方差不会被记录，它们有自己的滑动平均。
+            if isinstance(ly, tf.keras.layers.BatchNormalization):   # bn层的均值、方差不会被记录，它们有自己的滑动平均。
                 scale, offset, m, v = weights
                 self._shadow['%s.scale' % layer_name] = scale.copy()
                 self._shadow['%s.offset' % layer_name] = offset.copy()
@@ -51,7 +52,7 @@ class ExponentialMovingAverage():
             if len(weights) == 0:
                 continue
             layer_name = ly.name
-            if isinstance(ly, keras.layers.BatchNormalization):
+            if isinstance(ly, tf.keras.layers.BatchNormalization):
                 scale, offset, m, v = weights
 
                 name = '%s.scale' % layer_name
@@ -87,7 +88,7 @@ class ExponentialMovingAverage():
             if len(weights) == 0:
                 continue
             layer_name = ly.name
-            if isinstance(ly, keras.layers.BatchNormalization):
+            if isinstance(ly, tf.keras.layers.BatchNormalization):
                 scale, offset, m, v = weights
 
                 name = '%s.scale' % layer_name
@@ -118,7 +119,7 @@ class ExponentialMovingAverage():
             if len(weights) == 0:
                 continue
             layer_name = ly.name
-            if isinstance(ly, keras.layers.BatchNormalization):
+            if isinstance(ly, tf.keras.layers.BatchNormalization):
                 scale, offset, m, v = weights
 
                 name = '%s.scale' % layer_name
